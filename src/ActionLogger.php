@@ -21,7 +21,7 @@ final class ActionLogger{
          
     }
 
-    public static function userActivity($subject){
+    public static function userActivity($subject,$type ='file'){
 
         try {
           
@@ -40,12 +40,11 @@ final class ActionLogger{
                     $userId = $userDetails['_id'] ? $userDetails['_id'] : $userDetails['id'] ?? '';
                 }
             }
-            $userName = 'Nitin';
-            $userId = '002344';
+            
             $fileName = '../storage/logs/' . gethostname() . '-UserActivity-' . date('Y-m-d') . '.log';
 
             $loggerLine = '['.$timestamp.']' . ' - ' . request()->ip() . ' - ' . $subject . ' ' . $userId . ' ' . $userName;
-
+            chmod($fileName, 0777);
             file_put_contents($fileName, $loggerLine .PHP_EOL, FILE_APPEND);
             
         } catch (Throwable $th) {
