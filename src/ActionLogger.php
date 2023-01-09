@@ -23,24 +23,27 @@ final class ActionLogger{
     public static function userActivity($subject):void{
 
         try {
-            $log = [];
-            $log['subject']     = $subject;
-            $log['url']         = url()->current();            
-            $log['ip']          = request()->ip();
-            $log['agent']       = request()->userAgent();
-            $log['user_id']     = auth()->check() ? auth()->user()->id : 1;
-            $log['timestamp']   = date('Y-m-d H:i:s.u', time());   
-            
+            // $log = [];
+            // $log['subject']     = $subject;
+            // $log['url']         = url()->current();            
+            // $log['ip']          = request()->ip();
+            // $log['agent']       = request()->userAgent();
+            // $log['user_id']     = auth()->check() ? auth()->user()->id : 1;
+            // $log['timestamp']   = date('Y-m-d H:i:s.u', time());   
+            $userName ='';
+            $userId='';
             if(auth()->check()){
+
                $userId =  auth()->user()->id  ?? auth()->user()->_id ;
                $userName =  auth()->user()->username  ?? '' ; 
             }else{
-                $userDetails = Session::get('user_details');
-                $userName =  $userDetails['first_name']?? '' . ' ' . $userDetails['last_name'] ?? '';
-                $userId      = $userDetails['_id'] ? $userDetails['_id'] : $userDetails['id'] ?? '';
+                $userDetails = Session::get('user_details') ?? [];
+                if (!empty($userDetails)) {
+                    $userName = $userDetails['first_name'] ?? '' . ' ' . $userDetails['last_name'] ?? '';
+                    $userId = $userDetails['_id'] ? $userDetails['_id'] : $userDetails['id'] ?? '';
+                }
             }
-            $userName ='';
-            $userId='';
+           
             $fileName = '../storage/logs/' . gethostname() . '-UserActivity-' . date('Y-m-d') . '.log';
 
             $loggerLine = [date('Y-m-d H:i:s.u', time())] . '-' . request()->ip() . '-' . $subject . '' . $userId . ' ' . $userName;
