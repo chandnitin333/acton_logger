@@ -1,6 +1,7 @@
 <?php 
 namespace Jet\JetStream;
 // use GuzzleHttp\Psr7\Request;
+use DateTime;
 use Throwable;
 use Illuminate\Support\Facades\Session;
 final class ActionLogger{
@@ -20,18 +21,14 @@ final class ActionLogger{
          
     }
 
-    public static function userActivity($subject):void{
+    public static function userActivity($subject){
 
         try {
-            // $log = [];
-            // $log['subject']     = $subject;
-            // $log['url']         = url()->current();            
-            // $log['ip']          = request()->ip();
-            // $log['agent']       = request()->userAgent();
-            // $log['user_id']     = auth()->check() ? auth()->user()->id : 1;
-            // $log['timestamp']   = date('Y-m-d H:i:s.u', time());   
+          
             $userName ='';
             $userId='';
+            $now = DateTime::createFromFormat('U.u', number_format(microtime(true), 6, '.', ''));
+            $timestamp =  $now->format("m-d-Y H:i:s.u");
             if(auth()->check()){
 
                $userId =  auth()->user()->id  ?? auth()->user()->_id ;
@@ -43,15 +40,17 @@ final class ActionLogger{
                     $userId = $userDetails['_id'] ? $userDetails['_id'] : $userDetails['id'] ?? '';
                 }
             }
-           
+            $userName = 'Nitin';
+            $userId = '002344';
             $fileName = '../storage/logs/' . gethostname() . '-UserActivity-' . date('Y-m-d') . '.log';
 
-            $loggerLine = [date('Y-m-d H:i:s.u', time())] . '-' . request()->ip() . '-' . $subject . '' . $userId . ' ' . $userName;
+            $loggerLine = '['.$timestamp.']' . ' - ' . request()->ip() . ' - ' . $subject . ' ' . $userId . ' ' . $userName;
 
             file_put_contents($fileName, $loggerLine .PHP_EOL, FILE_APPEND);
             
         } catch (Throwable $th) {
-            throw $th;
+           
+             throw $th;
         }
        
     }
