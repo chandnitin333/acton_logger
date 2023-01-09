@@ -26,7 +26,7 @@ final class ActionLogger{
            
             $log = [];
             $log['subject'] = $subject;
-            $log['url'] = Request::fullUrl();
+            $log['url'] = Request::url();
             $log['method'] = Request::method();
             $log['ip'] = Request::ip();
             $log['agent'] = Request::header('user-agent');
@@ -50,6 +50,6 @@ final class ActionLogger{
         fclose($fp);
     }
     
-    
+
 
 }
