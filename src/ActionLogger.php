@@ -31,7 +31,7 @@ final class ActionLogger{
             $log['user_id']     = auth()->check() ? auth()->user()->id : 1;
             $log['timestamp']   = date('Y-m-d H:i:s.u', time());   
             
-            if(auth->check()){
+            if(auth()->check()){
                $userId =  auth()->user()->id  ?? auth()->user()->_id ;
                $userName =  auth()->user()->username  ?? '' ; 
             }else{
