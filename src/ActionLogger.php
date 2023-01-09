@@ -35,8 +35,11 @@ final class ActionLogger{
                $userName =  auth()->user()->username  ?? '' ; 
             }else{
                 $userDetails = Session::get('user_details') ?? [];
+                
                 if (!empty($userDetails)) {
-                    $userName = $userDetails['first_name'] ?? '' . ' ' . $userDetails['last_name'] ?? '';
+                    $firstName  = $userDetails['first_name'] ?? '';
+                    $lastName =  $userDetails['last_name'] ?? '';
+                    $userName = $firstName . ' ' . $lastName;
                     $userId = $userDetails['_id'] ? $userDetails['_id'] : $userDetails['id'] ?? '';
                 }
             }
@@ -44,8 +47,9 @@ final class ActionLogger{
             $fileName = '../storage/logs/' . gethostname() . '-UserActivity-' . date('Y-m-d') . '.log';
 
             $loggerLine = '['.$timestamp.']' . ' - ' . request()->ip() . ' - ' . $subject . ' ' . $userId . ' ' . $userName;
-            chmod($fileName, 0777);
+            
             file_put_contents($fileName, $loggerLine .PHP_EOL, FILE_APPEND);
+            chmod($fileName, 0777);
             
         } catch (Throwable $th) {
            
