@@ -25,12 +25,13 @@ final class ActionLogger{
         try {
            
             $log = [];
-            $log['subject'] = $subject;
-            $log['url'] = url()->current();
-            $log['method'] = request()->method();  
-            $log['ip'] = request()->ip();
-            $log['agent'] = request()->userAgent();
-            $log['user_id'] = auth()->check() ? auth()->user()->id : 1;
+            $log['subject']     = $subject;
+            $log['url']         = url()->current();
+            $log['method']      = request()->method();  
+            $log['ip']          = request()->ip();
+            $log['agent']       = request()->userAgent();
+            $log['user_id']     = auth()->check() ? auth()->user()->id : 1;
+            $log['timestamp']   = date('m/d/Y h:i:s a', time());
             // $log  = "----------Uer Activity---------------".PHP_EOL;
             $fileName = '../storage/logs/' . gethostname() . '-User-' . date('Y-m-d') . '.log';
             file_put_contents($fileName, json_encode($log).PHP_EOL, FILE_APPEND);
@@ -40,16 +41,7 @@ final class ActionLogger{
        
     }
 
-    function myErrorLog($message = 'no message') {
-        $date = date('Y-m-d H:i:s');
-        $fp   = fopen('/var/log/moodle-errors.log', 'a');
-        if (!$fp) {
-             throw new \Exception("Could not open log file! Permission error?");
-        }
-        fwrite($fp, $date . ' ' . $message . "\n");
-        fclose($fp);
-    }
-    
+   
 
 
 }
