@@ -1,6 +1,8 @@
 <?php 
 namespace Jet\JetStream;
+// use GuzzleHttp\Psr7\Request;
 use Throwable;
+use Illuminate\Http\Request;
 final class ActionLogger{
     /**
      * ActionLogger Class
@@ -18,13 +20,20 @@ final class ActionLogger{
         $this->loggerParams = $params;        
     }
 
-    public function userActivity():void{
+    public static function userActivity($subject):void{
 
         try {
-            
+           
+            $log = [];
+            $log['subject'] = $subject;
+            $log['url'] = Request::fullUrl();
+            $log['method'] = Request::method();
+            $log['ip'] = Request::ip();
+            $log['agent'] = Request::header('user-agent');
+            $log['user_id'] = auth()->check() ? auth()->user()->id : 1;
             // $log  = "----------Uer Activity---------------".PHP_EOL;
             $fileName = '../storage/logs/' . gethostname() . '-User-' . date('Y-m-d') . '.log';
-            file_put_contents($fileName, json_encode($this->loggerParams).PHP_EOL, FILE_APPEND);
+            file_put_contents($fileName, json_encode($log).PHP_EOL, FILE_APPEND);
         } catch (Throwable $th) {
             throw $th;
         }
@@ -40,6 +49,7 @@ final class ActionLogger{
         fwrite($fp, $date . ' ' . $message . "\n");
         fclose($fp);
     }
+    
     
 
 }
