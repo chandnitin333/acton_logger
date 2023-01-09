@@ -27,10 +27,10 @@ final class ActionLogger{
             $log = [];
             $log['subject'] = $subject;
             $log['url'] = url()->current();
-            // $log['method'] = Request::method();
-            // $log['ip'] = Request::ip();
-            // $log['agent'] = Request::header('user-agent');
-            // $log['user_id'] = auth()->check() ? auth()->user()->id : 1;
+            $log['method'] = request()->method();  
+            $log['ip'] = request()->ip();
+            $log['agent'] = request()->userAgent();
+            $log['user_id'] = auth()->check() ? auth()->user()->id : 1;
             // $log  = "----------Uer Activity---------------".PHP_EOL;
             $fileName = '../storage/logs/' . gethostname() . '-User-' . date('Y-m-d') . '.log';
             file_put_contents($fileName, json_encode($log).PHP_EOL, FILE_APPEND);
