@@ -1,9 +1,9 @@
 <?php 
 namespace Jet\JetStream;
-// use GuzzleHttp\Psr7\Request;
 use DateTime;
 use Throwable;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\DB;
 final class ActionLogger{
     /**
      * ActionLogger Class
@@ -14,12 +14,8 @@ final class ActionLogger{
      * @copyright        2023 Jetsynthesys Pvt Ltd.
      * @version          v1.0.0     
      */
-    protected $loggerParams = [];
     
-    public function __construct()
-    {
-         
-    }
+    static protected $logTable = 'users_activity_logs';
 
     public static function userActivity($subject,$type ='file'){
 
@@ -43,13 +39,21 @@ final class ActionLogger{
                     $userId = $userDetails['_id'] ? $userDetails['_id'] : $userDetails['id'] ?? '';
                 }
             }
-            
-            $fileName = '../storage/logs/' . gethostname() . '-UserActivity-' . date('Y-m-d') . '.log';
 
-            $loggerLine = '['.$timestamp.']' . ' - ' . request()->ip() . ' - ' . $subject . ' ' . $userId . ' ' . $userName;
-            
-            file_put_contents($fileName, $loggerLine .PHP_EOL, FILE_APPEND);
-            chmod($fileName, 0777);
+            if (strtolower($type) == 'file') {
+                $fileName = '../storage/logs/' . gethostname() . '-UserActivity-' . date('Y-m-d') . '.log';
+                $loggerLine = '[' . $timestamp . ']' . ' - ' . request()->ip() . ' - ' . $subject . ' ' . $userId . ' ' . $userName;
+                file_put_contents($fileName, $loggerLine . PHP_EOL, FILE_APPEND);
+                chmod($fileName, 0777);
+            }else{
+                DB::table(self::$logTable)->insert([
+                    'user_name'    => $userName,
+                    'user_id'   => $userId,
+                    'ip' => request()->ip(),
+                    'subject'   => $subject,
+                    'timesstamp'       => $timestamp
+                ]);
+            }
             
         } catch (Throwable $th) {
            
