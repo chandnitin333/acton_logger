@@ -16,11 +16,12 @@ final class ActionLogger{
      */
     
     static protected $logTable = 'users_activity_logs';
+    
 
     public static function userActivity($subject,$type ='file'){
 
         try {
-          
+            $type = (ACTIVITY_LOG_TYPE != '') ? ACTIVITY_LOG_TYPE : 'file';
             $userName ='';
             $userId='';
             $now = DateTime::createFromFormat('U.u', number_format(microtime(true), 6, '.', ''));
@@ -42,14 +43,16 @@ final class ActionLogger{
 
             if (strtolower($type) == 'file') {
                 $fileName = '../storage/logs/' . gethostname() . '-UserActivity-' . date('Y-m-d') . '.log';
-                $loggerLine = '[' . $timestamp . ']' . ' - ' . request()->ip() . ' - ' . $subject . ' ' . $userId . ' ' . $userName;
+                $loggerLine = '[' . $timestamp . ']' . ' - ' . request()->ip() . ' - ' .gethostname().' - '. $subject . ' ' . $userId . ' ' . $userName;
                 file_put_contents($fileName, $loggerLine . PHP_EOL, FILE_APPEND);
                 chmod($fileName, 0777);
             }else{
+                
                 DB::table(self::$logTable)->insert([
                     'user_name'    => $userName,
                     'user_id'   => $userId,
                     'ip' => request()->ip(),
+                    'hostname' => gethostname(),
                     'subject'   => $subject,
                     'timesstamp'       => $timestamp
                 ]);
